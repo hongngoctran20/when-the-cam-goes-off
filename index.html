@@ -1,0 +1,108 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="compare">
+            <div class="compare__image">
+            <img src="image/light.jpg">
+            </div>
+            <div class="compare__image compare__overlay">
+            <img src="image/dark.jpg">
+            </div>
+        </div>
+    </body>
+</html>
+
+<style>
+
+:root {
+  --slider-width: 81.78rem;
+  --slider-height: 46rem;
+}
+
+.compare {
+  margin-left: 7rem;
+  margin-right: 7rem;
+  position: absolute;
+  resize: auto;
+  height: var(--slider-height);
+  width: var(--slider-width);
+}
+
+.compare__image {
+  position: absolute;
+  height: var(--slider-height);
+  width: var(--slider-width);
+  border-radius: 0.4rem;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+}
+
+.compare__image img {
+  height: var(--slider-height);
+  width: var(--slider-width);
+  object-fit: cover;
+}
+.compare__slider {
+  position: absolute;
+  z-index: 1;
+  width: 1.6rem;
+  height: 1.6rem;
+  background: #121212;
+  border: 0.1rem solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.8);
+  border-radius: 50%;
+  cursor: grab;
+  transition: border-color 0.2s;
+}
+
+.compare__slider:active {
+  border: 0.1rem solid rgba(255, 255, 255, 0.3);
+  cursor: grabbing;
+}
+</style>
+
+<script>
+let isClicked = false;
+const image = document.querySelector(".compare__overlay");
+const width = image.offsetWidth;
+const height = image.offsetHeight;
+const slider = document.createElement("div");
+compare();
+function compare() {
+  image.parentElement.insertBefore(slider, image);
+  slider.classList.add("compare__slider");
+  slider.style.top = height / 2 - slider.offsetHeight / 2 + "px";
+  slider.style.left = width / 2 - slider.offsetWidth / 2 + "px";
+  image.style.width = "50%";
+  slider.addEventListener("mousedown", onSlideStart);
+  slider.addEventListener("touchstart", onSlideStart);
+  window.addEventListener("mouseup", () => (isClicked = false));
+  window.addEventListener("touchstop", () => (isClicked = false));
+  window.addEventListener("mousemove", onSlideMove);
+  window.addEventListener("touchmove", onSlideMove);
+}
+function onSlideStart(event) {
+  event.preventDefault();
+  isClicked = true;
+}
+function onSlideMove(event) {
+  if (!isClicked) return;
+  doSlide(currentPosition(event));
+}
+function currentPosition(event = window.event) {
+  let xImage = image.getBoundingClientRect();
+  let x = 0;
+  x = event.pageX - xImage.left;
+  if (x < 0) x = 0;
+  if (x > width) x = width;
+  return x;
+}
+function doSlide(x) {
+  image.style.width = x + "px";
+  slider.style.left = image.offsetWidth - slider.offsetWidth / 2 + "px";
+}
+</script>
